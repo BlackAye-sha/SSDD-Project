@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Bookstore{% endblock %}
+
+{% block content %}
+<div class="text-center mt-5">
+  <h1 class="display-4 mb-3">Welcome to Bookstore</h1>
+  <p class="lead mb-4">Discover your next favorite book across Fiction, Science, History and more!</p>
+  <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg me-3">Login</a>
+  <a href="{{ url_for('main.register') }}" class="btn btn-success btn-lg">Register</a>
+</div>
+{% endblock %}

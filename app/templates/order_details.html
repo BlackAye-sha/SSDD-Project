@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-5">
+        <h2>Order #{{ order.id }} Details</h2>
+        <hr>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Order Information</h5>
+                <p><strong>Order Date:</strong> {{ order.order_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Total Amount:</strong> ${{ "%.2f"|format(order.total_amount) }}</p>
+                <p><strong>Status:</strong> <span class="badge badge-{{ 'success' if order.status == 'completed' else 'warning' if order.status == 'pending' else 'info' }}">{{ order.status | replace('_', ' ') | title }}</span></p>
+                <p><strong>Payment Method:</strong> {{ order.payment_method | replace('_', ' ') | title }}</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Shipping Address</h5>
+                <p>{{ order.shipping_address }}</p>
+            </div>
+        </div>
+
+        <h5>Ordered Items</h5>
+        {% if order_items %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Quantity</th>
+                        <th>Price at Purchase</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_items %}
+                    <tr>
+                        <td>{{ item.book.title }}</td>
+                        <td>{{ item.book.author }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>${{ "%.2f"|format(item.price_at_purchase) }}</td>
+                        <td>${{ "%.2f"|format(item.quantity * item.price_at_purchase) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No items found for this order.</p>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{{ url_for('main.order_history') }}" class="btn btn-secondary">Back to Order History</a>
+            <a href="{{ url_for('main.home') }}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+{% endblock content %}

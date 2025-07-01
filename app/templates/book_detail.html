@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{{ book.title }}</h2>
+  <p><strong>Author:</strong> {{ book.author }}</p>
+  <p><strong>Genre:</strong> {{ book.genre }}</p>
+  <p><strong>Price:</strong> ${{ "%.2f"|format(book.price) }}</p>
+  <p>{{ book.description }}</p>
+
+  <hr>
+
+  <h3>Reviews & Ratings</h3>
+  {% if reviews %}
+    {% for review in reviews %}
+      <div class="mb-3 p-3 border rounded">
+        <strong>{{ review.user.username }}</strong> 
+        <span>
+          {% for i in range(review.rating) %}
+            ⭐
+          {% endfor %}
+          {% for i in range(5 - review.rating) %}
+            ☆
+          {% endfor %}
+        </span>
+        <p>{{ review.comment }}</p>
+        <small class="text-muted">{{ review.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No reviews yet. Be the first to review!</p>
+  {% endif %}
+
+  <hr>
+
+  <h4>Submit Your Review</h4>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.rating.label }}<br>
+      {{ form.rating(class="form-select") }}
+    </div>
+    <div class="mb-3">
+      {{ form.comment.label }}
+      {{ form.comment(class="form-control", rows="3") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+  </form>
+</div>
+{% endblock %}

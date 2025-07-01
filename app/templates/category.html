@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ genre|capitalize }} - Books{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{{ genre|capitalize }} Books</h2>
+
+{% if books %}
+  <div class="row">
+    {% for book in books %}
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{{ url_for('main.book_detail', book_id=book.id) }}">
+              {{ book.title }}
+            </a>
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">By {{ book.author }}</h6>
+          <p class="card-text">Price: ${{ "%.2f"|format(book.price) }}</p>
+
+          {% if current_user.is_authenticated %}
+          <form method="POST" action="{{ url_for('main.add_to_cart', book_id=book.id) }}">
+            <input type="number" name="quantity" value="1" min="1" class="form-control mb-2" style="width: 100px;">
+            <button type="submit" class="btn btn-primary btn-sm">Add to Cart 🛒</button>
+          </form>
+          {% else %}
+          <p><a href="{{ url_for('main.login') }}">Login</a> to add to cart.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">No books available in this category yet.</p>
+{% endif %}
+{% endblock %}

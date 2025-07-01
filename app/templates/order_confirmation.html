@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-5 text-center">
+        <h2>Order Placed Successfully!</h2>
+        <p class="lead">Thank you for your purchase.</p>
+        <p>Your order ID is: <strong>{{ order.id }}</strong></p>
+        <p>Total Amount: <strong>${{ "%.2f"|format(order.total_amount) }}</strong></p>
+        <p>Shipping to: <br>{{ order.shipping_address }}</p>
+        <p>Payment Method: <strong>{{ order.payment_method | replace('_', ' ') | title }}</strong></p> {# Format for display #}
+
+        {% if order.payment_method == 'easypaisa_transfer' %}
+            <div class="alert alert-warning mt-4">
+                <h5>Important: EasyPaisa Transfer Required!</h5>
+                <p>Your order is pending payment. Please transfer <strong>${{ "%.2f"|format(order.total_amount) }}</strong> to the following EasyPaisa account:</p>
+                <ul>
+                    <li><strong>Account Name:</strong> {{ easypaisa_details.account_name }}</li>
+                    <li><strong>Account Number:</strong> {{ easypaisa_details.account_number }}</li>
+                </ul>
+                <p>Once payment is confirmed, your order status will be updated and processed.</p>
+            </div>
+        {% endif %}
+
+        <p class="mt-4">
+            <a href="{{ url_for('main.home') }}" class="btn btn-info">Continue Shopping</a>
+            {# You might add a link to an "Order History" page here later #}
+        </p>
+    </div>
+{% endblock content %}

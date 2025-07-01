@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Bookstore{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">📚 Explore Books</h1>
+
+<!-- Search and Genre Filter Form -->
+<form method="GET" action="{{ url_for('main.home') }}" class="mb-4 d-flex justify-content-center gap-2 flex-wrap">
+  <input
+    type="text"
+    name="search"
+    class="form-control"
+    placeholder="Search by title or author"
+    value="{{ search_query }}"
+    style="max-width: 300px;"
+  />
+  <select name="genre" class="form-select" style="max-width: 200px;">
+    <option value="" {% if not genre_filter %}selected{% endif %}>All Genres</option>
+    {% for g in ['history', 'fanfic', 'poetry', 'quotes'] %}
+      <option value="{{ g }}" {% if g == genre_filter %}selected{% endif %}>{{ g.title() }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if show_books %}
+  <!-- Show filtered books -->
+  <div class="row">
+    {% if books %}
+      {% for book in books %}
+      <div class="col-md-6 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">By {{ book.author }}</h6>
+            <p class="card-text">Genre: {{ book.genre.title() }}</p>
+            <p class="card-text">Price: ${{ "%.2f"|format(book.price) }}</p>
+
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('main.add_to_cart', book_id=book.id) }}">
+              <input type="number" name="quantity" value="1" min="1" class="form-control mb-2" style="width: 100px;" />
+              <button type="submit" class="btn btn-primary btn-sm">Add to Cart 🛒</button>
+            </form>
+            {% else %}
+            <p><a href="{{ url_for('main.login') }}">Login</a> to add to cart.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-center">No books found matching your criteria.</p>
+    {% endif %}
+  </div>
+
+{% else %}
+  <!-- Show genre cards if no search/filter -->
+  <div class="row text-center">
+    {% set genres = [
+      {'name': 'history', 'label': '📚 History', 'image': 'history.jpg'},
+      {'name': 'fanfic', 'label': '📖 Fanfiction', 'image': 'fanfic.jpg'},
+      {'name': 'poetry', 'label': '✒️ Poetry', 'image': 'poetry.jpg'},
+      {'name': 'quotes', 'label': '💬 Quotes', 'image': 'quotes.jpg'}
+    ] %}
+
+    {% for g in genres %}
+      <div class="col-md-3 mb-4">
+        <a href="{{ url_for('main.category', genre=g.name) }}" class="text-decoration-none text-dark">
+          <div class="card shadow-sm h-100">
+            <img src="{{ url_for('static', filename='images/' ~ g.image) }}" class="card-img-top" alt="{{ g.label }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ g.label }}</h5>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% endblock %}
